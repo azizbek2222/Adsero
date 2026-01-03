@@ -22,13 +22,13 @@ class AdseroSDK {
     }
 
     async showInterstitial(seconds = 15) {
-        if (!this.appId) return console.error("Adsero: App ID topilmadi!");
+        if (!this.appId) return console.error("Adsero: App ID not found!");
 
         try {
             // 1. Nashriyotchi ma'lumotlarini olish
             const appSnap = await get(ref(db, `publisher_apps/${this.appId}`));
             if (!appSnap.exists()) {
-                console.error("Adsero: Noto'g'ri App ID!");
+                console.error("Adsero: Invalid App ID!");
                 return;
             }
             this.publisherId = appSnap.val().ownerId;
@@ -43,7 +43,7 @@ class AdseroSDK {
             );
 
             if (activeAds.length === 0) {
-                console.log("Adsero: Hozircha aktiv reklamalar yo'q.");
+                console.log("Adsero: There are no active ads yet..");
                 return;
             }
 
@@ -68,7 +68,7 @@ class AdseroSDK {
                     <img src="${ad.image}" style="width: 100%; height: 250px; object-fit: cover;">
                     <div style="padding: 20px;">
                         <h2 style="margin: 0 0 15px 0; font-size: 22px; color: #333;">${ad.title}</h2>
-                        <a href="${ad.url}" target="_blank" id="inter-click-btn" style="display: block; background: #0088cc; color: white; padding: 14px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">Batafsil ko'rish</a>
+                        <a href="${ad.url}" target="_blank" id="inter-click-btn" style="display: block; background: #0088cc; color: white; padding: 14px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">View details</a>
                     </div>
                 </div>
             `;
@@ -99,7 +99,7 @@ class AdseroSDK {
             };
 
         } catch (error) {
-            console.error("Adsero SDK xatolik:", error);
+            console.error("Adsero SDK error:", error);
         }
     }
 
@@ -117,9 +117,9 @@ class AdseroSDK {
 
         try {
             await update(ref(db), updates);
-            console.log("Adsero: Balans muvaffaqiyatli yangilandi.");
+            console.log("Adsero: Balance updated successfully.");
         } catch (error) {
-            console.error("Adsero: Balansni yangilashda xato yuz berdi!", error);
+            console.error("Adsero: An error occurred while updating the balance.!", error);
         }
     }
 
@@ -129,7 +129,7 @@ class AdseroSDK {
                 clicks: increment(1) 
             });
         } catch (error) {
-            console.error("Adsero: Clickni hisoblashda xato:", error);
+            console.error("Adsero: Click calculation error:", error);
         }
     }
 }
