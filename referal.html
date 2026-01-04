@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral - Adsero</title>
+    <link rel="stylesheet" href="publisher.css">
+    <link rel="stylesheet" href="referal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header"><h2>Adsero</h2></div>
+            <nav>
+                <a href="ads.html"><i class="fas fa-home"></i> Home</a>
+                <a href="publisher.html"><i class="fas fa-project-diagram"></i> Publisher</a>
+                <a href="advertiser.html"><i class="fas fa-bullhorn"></i> Advertiser</a>
+                <a href="#" class="active"><i class="fas fa-users"></i> Referral</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header class="top-bar">
+                <h1>Referral Program</h1>
+                <div class="wallet-status" style="background: #fff3e0; border: 1px solid #ffe0b2;">
+                    <small style="color: #e65100;">Total Bonus</small>
+                    <span id="ref-total-earned" style="color: #bf360c;">$0.0000</span>
+                </div>
+            </header>
+
+            <div class="ref-card">
+                <h3>Your Invite Link</h3>
+                <p>Invite friends and get 2% from their turnover.</p>
+                <div class="sdk-box" style="display: flex; justify-content: space-between; align-items: center; background: #1c1e21;">
+                    <code id="ref-link" style="color: #0088cc;">Loading link...</code>
+                    <button class="copy-btn" onclick="copyRef()" style="cursor:pointer; padding: 5px 15px; border-radius: 5px; border:none; background: var(--primary); color:white;">Copy</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-user-friends"></i>
+                    <h4>Total Friends</h4>
+                    <span id="ref-count">0</span>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-arrow-up"></i>
+                    <h4>From Advertisers</h4>
+                    <span id="ref-adv-earned">$0.0000</span>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>From Publishers</h4>
+                    <span id="ref-pub-earned">$0.0000</span>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="referal.js"></script>
+</body>
+</html>
