@@ -71,7 +71,7 @@ function loadUserAds(uid) {
                 }
             }
         }
-        if (count === 0) adsList.innerHTML = "<p>Sizda hali reklamalar yo'q.</p>";
+        if (count === 0) adsList.innerHTML = "<p>You don't have any ads yet..</p>";
     });
 }
 
@@ -81,7 +81,7 @@ adForm.onsubmit = async (e) => {
     const adBudget = parseFloat(document.getElementById('ad-budget').value);
 
     if (adBudget > currentBalance) {
-        alert("Xato: Balansingizda mablag' yetarli emas!");
+        alert("Error: There are not enough funds in your balance.!");
         return;
     }
 
@@ -104,7 +104,7 @@ adForm.onsubmit = async (e) => {
         
         adModal.style.display = "none";
         adForm.reset();
-        alert("Reklama yaratildi!");
+        alert("Advertisement created!");
     } catch (err) { alert(err.message); }
 };
 
@@ -115,7 +115,7 @@ topUpForm.onsubmit = async (e) => {
     const extraAmount = parseFloat(document.getElementById('extra-budget').value);
 
     if (extraAmount > currentBalance) {
-        alert("Xato: Balans yetarli emas!");
+        alert("Error: Insufficient balance!");
         return;
     }
 
@@ -124,7 +124,7 @@ topUpForm.onsubmit = async (e) => {
         await update(ref(db, `advertisers/${user.uid}`), { balance: increment(-extraAmount) });
         topUpModal.style.display = "none";
         topUpForm.reset();
-        alert("Byudjet yangilandi!");
+        alert("Budget updated!");
     } catch (err) { alert(err.message); }
 };
 

@@ -15,7 +15,7 @@ function copyCode(elementId) {
             btn.style.background = "";
         }, 2000);
     }).catch(err => {
-        console.error('Nusxa olishda xatolik:', err);
+        console.error('Copy error:', err);
     });
 }
 

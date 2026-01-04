@@ -36,9 +36,9 @@ let isLogin = true;
 toggleLink.addEventListener('click', (e) => {
     e.preventDefault();
     isLogin = !isLogin;
-    authTitle.innerText = isLogin ? "Xush kelibsiz" : "Ro'yxatdan o'tish";
-    mainBtn.innerText = isLogin ? "Tizimga kirish" : "Ro'yxatdan o'tish";
-    toggleLink.innerText = isLogin ? "Ro'yxatdan o'tish" : "Tizimga kirish";
+    authTitle.innerText = isLogin ? "Welcome" : "Sign up";
+    mainBtn.innerText = isLogin ? "Login" : "Sign up";
+    toggleLink.innerText = isLogin ? "Sign up" : "Login";
 });
 
 authForm.addEventListener('submit', (e) => {
@@ -49,7 +49,7 @@ authForm.addEventListener('submit', (e) => {
     if (isLogin) {
         signInWithEmailAndPassword(auth, email, password)
             .then(() => window.location.href = 'ads.html')
-            .catch(err => errorMsg.innerText = "Xato: " + err.message);
+            .catch(err => errorMsg.innerText = "Error: " + err.message);
     } else {
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {
@@ -77,6 +77,6 @@ authForm.addEventListener('submit', (e) => {
 
                 window.location.href = 'ads.html';
             })
-            .catch(err => errorMsg.innerText = "Xato: " + err.message);
+            .catch(err => errorMsg.innerText = "Error: " + err.message);
     }
 });

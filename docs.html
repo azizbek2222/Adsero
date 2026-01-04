@@ -35,7 +35,7 @@
 
             <section id="installation" class="doc-section">
                 <h2><span class="step-number">1</span> SDK Integration</h2>
-                <p>Reklamalarni ko'rsatish uchun quyidagi scriptni saytingizning <code>&lt;head&gt;</code> qismiga joylashtiring.</p>
+                <p>To display ads, place the following script in the <code>&lt;head&gt;</code> section of your site.</p>
                 <div class="code-block">
                     <button class="copy-btn" onclick="copyCode('code-install')">Copy</button>
                     <div class="sdk-box"><code id="code-install">&lt;script type="module" src="https://adsero.vercel.app/sdk.js" data-app-id="YOUR_APP_ID"&gt;&lt;/script&gt;</code></div>
@@ -43,8 +43,8 @@
             </section>
 
             <section id="usage" class="doc-section">
-                <h2><span class="step-number">2</span> Reklamani chaqirish</h2>
-                <p>Reklamani ko'rsatish uchun <code>AdseroSDK</code> klassidan foydalaning. Funksiya reklamani tizim tomonidan belgilangan vaqt bilan chiqaradi.</p>
+                <h2><span class="step-number">2</span> Call for advertising</h2>
+                <p>Use the <code>AdseroSDK</code> class to display ads.</p>
                 <div class="code-block">
                     <button class="copy-btn" onclick="copyCode('code-usage')">Copy</button>
                     <div class="sdk-box"><code id="code-usage">
@@ -63,12 +63,12 @@ adsero.showInterstitial();
             </section>
 
             <section class="doc-section">
-                <h2>To'liq misol (Full Example)</h2>
-                <p>Tugma bosilganda reklamani chiqarish namunasi:</p>
+                <h2>Complete example (Full Example)</h2>
+                <p>Example of displaying an ad when a button is clicked:</p>
                 <div class="code-block">
                     <button class="copy-btn" onclick="copyCode('code-full')">Copy</button>
                     <div class="sdk-box"><code id="code-full">
-&lt;button onclick="startAd()"&gt;Bonus olish&lt;/button&gt;
+&lt;button onclick="startAd()"&gt;Get a bonus&lt;/button&gt;
 
 &lt;script&gt;
   function startAd() {
@@ -76,7 +76,7 @@ adsero.showInterstitial();
           const ad = new AdseroSDK();
           ad.showInterstitial(); 
       } else {
-          console.error("SDK yuklanmagan!");
+          console.error("SDK not loaded!");
       }
   }
 &lt;/script&gt;
