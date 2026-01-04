@@ -15,7 +15,7 @@
             </div>
             <nav>
                 <a href="ads.html"><i class="fas fa-home"></i> Home</a>
-                <a href="#" class="active"><i class="fas fa- project-diagram"></i> My projects</a>
+                <a href="#" class="active"><i class="fas fa-project-diagram"></i> My projects</a>
                 <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Exit</button>
             </nav>
         </aside>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="wallet-container">
                     <div class="wallet-status">
-                        <small>Income</small>
+                        <small>Total Income</small>
                         <span id="pub-balance">$0.0000</span>
                     </div>
                     <button id="exchange-btn" class="btn-exchange">
@@ -43,7 +43,7 @@
             </section>
 
             <section class="apps-container">
-                <h3>Your apps and SDK</h3>
+                <h3>Your apps and SDK statistics</h3>
                 <div id="apps-list" class="apps-list">
                     <div class="loader">Loading projects...</div>
                 </div>
@@ -55,7 +55,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Register application</h2>
-                <span class="close">&times;</span>
+                <span class="close" id="close-modal">&times;</span>
             </div>
             <form id="add-app-form">
                 <div class="input-group">

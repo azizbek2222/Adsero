@@ -87,3 +87,52 @@ body { background-color: var(--light-bg); color: var(--text-main); }
     .sidebar { width: 100%; padding: 15px; }
     .top-bar { flex-direction: column; gap: 15px; text-align: center; }
 }
+
+/* App Card ichidagi statistika uchun */
+.app-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.app-stats {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #edf2f7;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-item small {
+    color: #718096;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.earnings-text {
+    color: var(--success);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.sdk-label {
+    font-size: 13px; 
+    color: #666;
+    margin-bottom: 5px;
+}
+
+/* Kichik o'zgarish card uchun */
+.app-card {
+    transition: transform 0.2s;
+}
+
+.app-card:hover {
+    transform: scale(1.01);
+}

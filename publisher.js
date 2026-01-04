@@ -16,33 +16,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// UI Elements
 const modal = document.getElementById("app-modal");
 const openBtn = document.getElementById("open-app-modal");
-const closeBtn = document.querySelector(".close");
+const closeBtn = document.getElementById("close-modal");
 const appForm = document.getElementById("add-app-form");
 const exchangeBtn = document.getElementById('exchange-btn');
 
-// Modal Logic
 if (openBtn) openBtn.onclick = () => modal.style.display = "block";
 if (closeBtn) closeBtn.onclick = () => modal.style.display = "none";
 window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
 
-// Auth State
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        const userRef = ref(db, 'publishers/' + user.uid);
-        update(userRef, { email: user.email.toLowerCase(), uid: user.uid });
-        loadUserApps(user.uid);
         loadBalance(user.uid);
+        loadUserApps(user.uid);
     } else {
         window.location.href = 'index.html';
     }
 });
 
 function loadBalance(uid) {
-    onValue(ref(db, `publishers/${uid}/balance`), (snap) => {
-        const balance = snap.val() || 0;
+    onValue(ref(db, `publishers/${uid}/balance`), (snapshot) => {
+        const balance = snapshot.val() || 0;
         document.getElementById('pub-balance').innerText = `$${balance.toFixed(4)}`;
     });
 }
@@ -58,11 +53,22 @@ function loadUserApps(uid) {
             for (let id in data) {
                 if (data[id].ownerId === uid) {
                     count++;
+                    const earnings = data[id].earnings || 0;
                     const code = `<script type="module" src="https://adsero.vercel.app/sdk.js" data-app-id="${id}"></script>`;
+                    
                     list.innerHTML += `
                         <div class="app-card">
-                            <h4>${data[id].name} <span class="id-badge">ID: ${id}</span></h4>
-                            <p style="font-size:13px; color:#666;">Copy and paste this SDK into your HTML:</p>
+                            <div class="app-card-header">
+                                <h4>${data[id].name}</h4>
+                                <span class="id-badge">ID: ${id}</span>
+                            </div>
+                            <div class="app-stats">
+                                <div class="stat-item">
+                                    <small>Project Profit</small>
+                                    <span class="earnings-text">$${earnings.toFixed(4)}</span>
+                                </div>
+                            </div>
+                            <p class="sdk-label">Copy and paste this SDK into your HTML:</p>
                             <div class="sdk-box"><code>${code.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></div>
                         </div>`;
                 }
@@ -77,8 +83,15 @@ appForm.onsubmit = (e) => {
     const user = auth.currentUser;
     const name = document.getElementById('app-name').value;
     const newRef = push(ref(db, 'publisher_apps'));
-    set(newRef, { ownerId: user.uid, name: name, createdAt: Date.now() })
-        .then(() => { modal.style.display = "none"; appForm.reset(); });
+    set(newRef, { 
+        ownerId: user.uid, 
+        name: name, 
+        earnings: 0, // Dastlabki daromad 0
+        createdAt: Date.now() 
+    }).then(() => { 
+        modal.style.display = "none"; 
+        appForm.reset(); 
+    });
 };
 
 if (exchangeBtn) exchangeBtn.onclick = () => window.location.href = 'exchange.html';
