@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getDatabase, ref, push, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDdDnuUlqaHyMYc0vKOmjLFxFSTmWh3gIw",
@@ -86,7 +86,7 @@ appForm.onsubmit = (e) => {
     set(newRef, { 
         ownerId: user.uid, 
         name: name, 
-        earnings: 0, // Dastlabki daromad 0
+        earnings: 0, 
         createdAt: Date.now() 
     }).then(() => { 
         modal.style.display = "none"; 
