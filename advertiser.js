@@ -1,7 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getDatabase, ref, push, set, onValue, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, set, onValue, update, increment, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+// Firebase konfiguratsiyasi
 const firebaseConfig = {
   apiKey: "AIzaSyDdDnuUlqaHyMYc0vKOmjLFxFSTmWh3gIw",
   authDomain: "sample-firebase-ai-app-955f2.firebaseapp.com",
@@ -20,102 +21,119 @@ let currentBalance = 0;
 
 const adModal = document.getElementById("ad-modal");
 const topUpModal = document.getElementById("top-up-modal");
-const openBtn = document.getElementById("open-modal");
 const adForm = document.getElementById("add-ad-form");
 const topUpForm = document.getElementById("top-up-form");
-const exchangeBtn = document.getElementById('exchange-btn');
+const adsList = document.getElementById("ads-list");
 
-// Modal funksiyalari
-if (openBtn) openBtn.onclick = () => adModal.style.display = "block";
-window.closeModal = (id) => document.getElementById(id).style.display = "none";
-window.onclick = (e) => { 
-    if (e.target.className === 'modal') e.target.style.display = "none"; 
-};
-
+// Foydalanuvchi holati va Balansni tekshirish
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        const userRef = ref(db, 'advertisers/' + user.uid);
-        update(userRef, { email: user.email.toLowerCase(), uid: user.uid });
-        loadBalance(user.uid);
+        // Balansni real vaqtda kuzatish
+        onValue(ref(db, `advertisers/${user.uid}/balance`), (snapshot) => {
+            currentBalance = snapshot.val() || 0;
+            document.getElementById('user-balance').innerText = `$${currentBalance.toFixed(2)}`;
+        });
+        // Foydalanuvchi reklamalarini yuklash
         loadUserAds(user.uid);
     } else {
         window.location.href = 'index.html';
     }
 });
 
-function loadBalance(uid) {
-    onValue(ref(db, `advertisers/${uid}/balance`), (snapshot) => {
-        currentBalance = snapshot.val() || 0;
-        document.getElementById('user-balance').innerText = `$${currentBalance.toFixed(2)}`;
-    });
-}
-
+// Reklamalarni yuklash funksiyasi
 function loadUserAds(uid) {
     onValue(ref(db, 'ads'), (snapshot) => {
-        const grid = document.getElementById('ads-grid');
-        grid.innerHTML = '';
+        adsList.innerHTML = "";
         const data = snapshot.val();
         let count = 0;
-        if (data) {
-            for (let id in data) {
-                if (data[id].ownerId === uid) {
-                    count++;
-                    const card = document.createElement('div');
-                    card.className = 'ad-card';
-                    card.onclick = () => openTopUp(id); // Bosilganda byudjet qo'shish
-                    card.innerHTML = `
-                        <img src="${data[id].image}" alt="ad">
-                        <div class="ad-card-body">
-                            <h4>${data[id].title}</h4>
-                            <p>Budget: <strong>$${data[id].budget.toFixed(2)}</strong></p>
-                            <span class="ad-status" style="background:${data[id].status === 'active' ? '#e8f5e9' : '#ffebee'}; color:${data[id].status === 'active' ? '#2e7d32' : '#c62828'}">
-                                ${data[id].status}
-                            </span>
-                        </div>`;
-                    grid.appendChild(card);
-                }
+
+        for (let id in data) {
+            if (data[id].ownerId === uid) {
+                count++;
+                const ad = data[id];
+                const adCard = document.createElement('div');
+                adCard.className = 'ad-card';
+                adCard.innerHTML = `
+                    <img src="${ad.img}" alt="Ad Image">
+                    <div class="ad-card-body">
+                        <h4>${ad.title}</h4>
+                        <div class="ad-stats-mini">
+                            <span><i class="fas fa-eye"></i> ${ad.views || 0}</span>
+                            <span><i class="fas fa-mouse-pointer"></i> ${ad.clicks || 0}</span>
+                        </div>
+                        <p>Budget: <strong>$${ad.budget.toFixed(2)}</strong></p>
+                        <div class="ad-status ${ad.status}">${ad.status}</div>
+                        <button class="btn-topup" onclick="openTopUp('${id}')">Top up</button>
+                    </div>
+                `;
+                adsList.appendChild(adCard);
             }
         }
-        if (count === 0) grid.innerHTML = '<p>No ads found. Create your first campaign!</p>';
+        if (count === 0) adsList.innerHTML = "<p>Sizda hali reklamalar yo'q.</p>";
     });
 }
 
-// Reklama byudjetini oshirish oynasini ochish
-function openTopUp(adId) {
-    document.getElementById('target-ad-id').value = adId;
-    topUpModal.style.display = "block";
-}
-
-// Yangi reklama yaratish
+// Yangi reklama yaratish va Referal bonus
 adForm.onsubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
     const adBudget = parseFloat(document.getElementById('ad-budget').value);
 
     if (adBudget > currentBalance) {
-        alert("Error: Insufficient balance!");
+        alert("Xato: Balansingizda mablag' yetarli emas!");
         return;
     }
 
     const newAd = {
         ownerId: user.uid,
         title: document.getElementById('ad-title').value,
-        image: document.getElementById('ad-image').value,
+        img: document.getElementById('ad-image').value,
         url: document.getElementById('ad-url').value,
         budget: adBudget,
+        views: 0,
+        clicks: 0,
         status: "active",
         createdAt: Date.now()
     };
 
     try {
-        await set(push(ref(db, 'ads')), newAd);
-        await update(ref(db, `advertisers/${user.uid}`), { balance: increment(-adBudget) });
+        // 1. Reklamani bazaga qo'shish
+        const newAdRef = push(ref(db, 'ads'));
+        await set(newAdRef, newAd);
+
+        // 2. Advertiser balansidan pul yechish
+        await update(ref(db, `advertisers/${user.uid}`), { 
+            balance: increment(-adBudget) 
+        });
+
+        // 3. REFERAL TIZIMI: 2% Bonusni hisoblash
+        const userSnap = await get(ref(db, `users/${user.uid}`));
+        const userData = userSnap.val();
+
+        if (userData && userData.referredBy) {
+            const bonus = adBudget * 0.02; // 2% komissiya
+            const referrerId = userData.referredBy;
+
+            // Taklif qilgan odamning (Referrer) hisobiga pul tushirish
+            await update(ref(db, `advertisers/${referrerId}`), { 
+                balance: increment(bonus) 
+            });
+            
+            // Referal statistikasini yangilash
+            await update(ref(db, `users/${referrerId}/referralStats`), { 
+                advEarned: increment(bonus) 
+            });
+        }
+
         adModal.style.display = "none";
         adForm.reset();
-    } catch (err) { alert(err.message); }
+        alert("Reklama muvaffaqiyatli yaratildi va 2% referal bonus o'tkazildi!");
+    } catch (err) {
+        alert("Xato: " + err.message);
+    }
 };
 
-// Mavjud reklama byudjetini oshirish (Top up)
+// Byudjetni to'ldirish (Top up)
 topUpForm.onsubmit = async (e) => {
     e.preventDefault();
     const user = auth.currentUser;
@@ -123,28 +141,35 @@ topUpForm.onsubmit = async (e) => {
     const extraAmount = parseFloat(document.getElementById('extra-budget').value);
 
     if (extraAmount > currentBalance) {
-        alert("Error: Insufficient balance!");
+        alert("Xato: Balans yetarli emas!");
         return;
     }
 
     try {
-        // Reklama byudjetini oshirish
         await update(ref(db, `ads/${adId}`), { 
             budget: increment(extraAmount),
-            status: "active" // Agar byudjet tugab to'xtagan bo'lsa, qayta yoqiladi
+            status: "active" 
         });
-        // Foydalanuvchi balansidan ayirish
         await update(ref(db, `advertisers/${user.uid}`), { 
             balance: increment(-extraAmount) 
         });
 
         topUpModal.style.display = "none";
         topUpForm.reset();
-        alert("Budget updated successfully!");
+        alert("Reklama byudjeti yangilandi!");
     } catch (err) {
-        alert("Update failed: " + err.message);
+        alert("Xato: " + err.message);
     }
 };
 
-if (exchangeBtn) exchangeBtn.onclick = () => window.location.href = 'exchange.html';
+// Global funksiyalar (Modal oynalar uchun)
+window.openModal = (id) => document.getElementById(id).style.display = "flex";
+window.closeModal = (id) => document.getElementById(id).style.display = "none";
+window.openTopUp = (adId) => {
+    document.getElementById('target-ad-id').value = adId;
+    openModal('top-up-modal');
+};
+
+document.getElementById('open-ad-modal').onclick = () => openModal('ad-modal');
 document.getElementById('logout-btn').onclick = () => signOut(auth);
+document.getElementById('exchange-btn').onclick = () => window.location.href = 'exchange.html';
