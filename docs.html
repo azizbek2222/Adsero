@@ -44,47 +44,66 @@
 
             <section id="usage" class="doc-section">
                 <h2><span class="step-number">2</span> Call for advertising</h2>
-                <p>Use the <code>AdseroSDK</code> class to display ads.</p>
+                <p>Use the <code>AdseroSDK</code> class to display ads. The SDK must be initialized after the page has loaded.</p>
                 <div class="code-block">
                     <button class="copy-btn" onclick="copyCode('code-usage')">Copy</button>
                     <div class="sdk-box"><code id="code-usage">
-// SDK ni ishga tushirish
-const adsero = new window.AdseroSDK();
-
-// Reklamani ko'rsatish
-adsero.showInterstitial();
+// Reklamani chaqirish funksiyasi
+async function startAd() {
+    if (window.AdseroSDK) {
+        const ad = new window.AdseroSDK();
+        await ad.showInterstitial();
+    } else {
+        console.error("Adsero SDK is not loaded yet.");
+    }
+}
                     </code></div>
                 </div>
                 
                 <div class="info-note">
                     <i class="fas fa-info-circle"></i>
-                    <strong>Security:</strong> The advertising time is fixed within the SDK and cannot be changed by the user..
+                    <strong>Note:</strong> Since the SDK is a module, it attaches itself to the <code>window</code> object. Always check <code>if(window.AdseroSDK)</code> before calling.
                 </div>
             </section>
 
             <section class="doc-section">
-                <h2>Complete example (Full Example)</h2>
-                <p>Example of displaying an ad when a button is clicked:</p>
+                <h2>Complete Example (Full Example)</h2>
+                <p>Copy this full code to test the integration instantly:</p>
                 <div class="code-block">
                     <button class="copy-btn" onclick="copyCode('code-full')">Copy</button>
-                    <div class="sdk-box"><code id="code-full">
-&lt;button onclick="startAd()"&gt;Get a bonus&lt;/button&gt;
+                    <div class="sdk-box"><code id="code-full">&lt;!-- 1. SDK ulanishi --&gt;
+&lt;script type="module" src="https://adsero.vercel.app/sdk.js" data-app-id="YOUR_APP_ID"&gt;&lt;/script&gt;
+
+&lt;!-- 2. Reklama tugmasi --&gt;
+&lt;button id="adsero-btn"&gt;Get a bonus&lt;/button&gt;
 
 &lt;script&gt;
-  function startAd() {
-      if(window.AdseroSDK) {
-          const ad = new AdseroSDK();
-          ad.showInterstitial(); 
+  // Tugmaga bosilganda reklamani ko'rsatish
+  document.getElementById('adsero-btn').addEventListener('click', async () => {
+      if (window.AdseroSDK) {
+          try {
+              const ad = new window.AdseroSDK();
+              await ad.showInterstitial();
+          } catch (e) {
+              console.error("Ad error:", e);
+          }
       } else {
-          console.error("SDK not loaded!");
+          alert("SDK is still loading, please wait...");
       }
-  }
-&lt;/script&gt;
-                    </code></div>
+  });
+&lt;/script&gt;</code></div>
                 </div>
             </section>
         </main>
     </div>
     <script src="docs.js"></script>
+    <script>
+        function copyCode(id) {
+            const code = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
+    </script>
 </body>
 </html>
